@@ -3,6 +3,9 @@ import Titulo from "../Titulo"
 import Populares from "./Populares"
 import Tag from "./Tags"
 import Imagen from "./Imagen"
+import { useContext } from "react"
+import { GlobalContext } from "../../context/GlobalContext"
+import Cargando from "../Cargando"
 
 const GaleriaContainer = styled.div`
 display: flex;
@@ -20,18 +23,26 @@ const ImagenesContainer = styled.section`
 `
 
 
-const Galeria = ({ fotos = [], alSeleccionarFoto,alAlternarFavorito }) => {
-
+const Galeria = () => {
+  
+    const { state } = useContext(GlobalContext);
+   
     return (
+        state.fotosDeGaleria.length == 0 ? 
+        <Cargando></Cargando> :
         <>
             <Tag />
             <GaleriaContainer>
                 <SeccionFluida>
                     <Titulo>Navegue por la galería</Titulo>
                     <ImagenesContainer>
-                        {fotos.map(foto => <Imagen
-                        alAlternarFavorito= {alAlternarFavorito}
-                        alSolicitarZoom={alSeleccionarFoto}
+                        {state.fotosDeGaleria.filter(foto => {
+                            return state.consulta == ''|| 
+                            foto.titulo.toLocaleLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,"")
+                            .includes(state.consulta.toLocaleLowerCase().normalize("NFD").replace(/\p{Diacritic}/gu,""))
+                        })
+                        
+                            .map(foto => <Imagen
                             key={foto.id}
                             foto={foto} />)
                         }
